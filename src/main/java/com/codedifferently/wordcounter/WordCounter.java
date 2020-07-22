@@ -35,6 +35,7 @@ public class WordCounter {
         sortMap(wordMap);
 
         getMostLeast(wordMap);
+        getLongestWord(wordMap);
 
         
 
@@ -106,5 +107,30 @@ public class WordCounter {
         System.out.println(msg);
 
 
+    }
+
+    public static void getLongestWord(Map<String,Integer> wordMap){
+
+        String longestWord = "nothing";
+
+        int length = 0;
+
+        for (String key : wordMap.keySet()) {
+
+            if (key.length() > length){
+
+                longestWord = key;
+                length = key.length();
+
+            }
+
+
+        }
+
+        String msg = "The most longest word is: " + longestWord + ", which is " + length + " characters long.\n";
+
+
+
+        System.out.println(msg);
     }
 }
