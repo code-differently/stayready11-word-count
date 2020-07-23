@@ -11,25 +11,40 @@ import java.util.stream.Collectors;
 
 public class WordCounter {
     //sorts the words alphabetically
-    static TreeMap<String, Integer> trackUniqueWords = new TreeMap<String, Integer>();
+    private TreeMap<String, Integer> trackUniqueWords;
     //static to prevent garbage collection
     private final static Logger myLogger = Logger.getLogger("com.codedifferently.wordcounter");
 
-    public static void main(String[] args) {
-        File file = new File("C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\stayready11-word-count\\TheModernPrometheus.txt");
-        readFile(file);
-        printOccurrencesOfWords();
-        myLogger.info(getMostOrLeastUsedWords("most"));
-        myLogger.info(getMostOrLeastUsedWords("least"));
-        myLogger.info(returnLongestWords());
+    public WordCounter() {
+        trackUniqueWords = new TreeMap<String, Integer>();
     }
 
-    public static void readFile(File file) {
+    public static void main(String[] args) {
+        File file = new File("C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\stayready11-word-count\\TheModernPrometheus.txt");
+        WordCounter wordCounter = new WordCounter();
+        wordCounter.readFile(file);
+
+        myLogger.info(wordCounter.getOccurrencesOfWords());
+        myLogger.info(wordCounter.getNumberOfUniqueWords());
+        myLogger.info(wordCounter.getMostOrLeastUsedWords("most"));
+        myLogger.info(wordCounter.getMostOrLeastUsedWords("least"));
+        myLogger.info(wordCounter.getLongestWords());
+    }
+
+    public TreeMap<String, Integer> getTrackUniqueWords() {
+        return trackUniqueWords;
+    }
+
+    //user shouldn't have to set the hashmap, only get it after operations
+
+    public void readFile(File file) {
         try (Scanner in = new Scanner(new FileInputStream(file), "UTF-8")) {
             while(in.hasNext()) {
                 String individualWord = in.next().toLowerCase();
+                //replace a character that is not a-z with a inserting nothing.
+                // (I don't check for A-Z because I change the string to lower case)
                 individualWord = individualWord.replaceAll("[^a-z]", "");
-                incrementOrPlaceValueInHashMap(individualWord);
+                incrementOrPlaceValueInTreeMap(individualWord, trackUniqueWords);
             }
         }
         catch(FileNotFoundException fileNotFoundException) {
@@ -38,61 +53,84 @@ public class WordCounter {
         }
     }
 
-    private static void incrementOrPlaceValueInHashMap(String individualWord) {
-        if(trackUniqueWords.containsKey(individualWord)) {
-            trackUniqueWords.put(individualWord, trackUniqueWords.get(individualWord) + 1);
+    public String getNumberOfUniqueWords() {
+        return "There are: " + trackUniqueWords.size() + " unique words excluding non alphabetic characters.\n";
+    }
+
+    private void incrementOrPlaceValueInTreeMap(String individualWord, TreeMap<String, Integer> words) {
+        if(words.containsKey(individualWord)) {
+            words.put(individualWord, words.get(individualWord) + 1);
         }
         else {
-            trackUniqueWords.put(individualWord, 1);
+            words.put(individualWord, 1);
         }
     }
 
-    public static void printOccurrencesOfWords() {
+    public String getOccurrencesOfWords() {
+        StringBuilder occurrencesOfWords = new StringBuilder();
         for(Map.Entry<String, Integer> word: trackUniqueWords.entrySet()) {
-            myLogger.info(word.getKey() + " occurs " + word.getValue() + " times.");
+            occurrencesOfWords.append("The word: \"" + word.getKey() + "\" occurs " + word.getValue() + " times.\n");
         }
+        return occurrencesOfWords.toString();
     }
 
-    public static String getMostOrLeastUsedWords(String mostOrLeast) {
+    public String getMostOrLeastUsedWords(String mostOrLeast) {
         int mostOrLeastOccurrencesOfAnyWord = returnMostOrLeastOccurrences(mostOrLeast);
 
         StringBuilder wordsUnderCriteria = new StringBuilder();
 
         for(Map.Entry<String, Integer> word: trackUniqueWords.entrySet()) {
             if(word.getValue() == mostOrLeastOccurrencesOfAnyWord) {
-                wordsUnderCriteria.append("The word: \"" + word.getKey() + "\"" + " is a word that occurs the " + mostOrLeast + ". It occurs specifically " + word.getValue() + " times!\n");
+                wordsUnderCriteria.append("The word: \"" + word.getKey() + "\"" + " is a word that occurs the " + mostOrLeast + ". It occurs " + word.getValue() + " times!\n");
             }
         }
         return wordsUnderCriteria.toString();
     }
 
-    private static int returnMostOrLeastOccurrences(String mostOrLeast) {
+    private int returnMostOrLeastOccurrences(String mostOrLeast) {
         return mostOrLeast.equals("most") ? Collections.max(trackUniqueWords.values()) : Collections.min(trackUniqueWords.values());
     }
 
-    public static String returnLongestWords() {
+    public String getLongestWords() {
         List<String> longestWords = trackUniqueWords.keySet()
                 .stream()
                 .sorted(Comparator.comparing(String::length))
                 .collect(Collectors.toList());
+        //need it to be in descending order so that I can access the longest words first
+        Collections.reverse(longestWords);
         return convertLongestWordsToString(longestWords);
     }
 
-    private static String convertLongestWordsToString(List<String> longestWords) {
+    private String convertLongestWordsToString(List<String> longestWords) {
         StringBuilder allLongWords = new StringBuilder();
-        int lastIndex = longestWords.size() - 1;
-        String oneOfTheLongestWords = longestWords.get(lastIndex);
+        String oneOfTheLongestWords = longestWords.get(0);
         int lengthOfLongestWord = oneOfTheLongestWords.length();
 
-        for(int index = lastIndex; index >= 0; index--) {
+        for(int index = 0; index < longestWords.size(); index++) {
             String word = longestWords.get(index);
             if(word.length() == lengthOfLongestWord) {
-                allLongWords.append("The word \"" + word + "\" is one of the words with the longest length of " + lengthOfLongestWord + "\n");
+                allLongWords.append("The word: \"" + word + "\" is one of the words with the longest length of " + lengthOfLongestWord + ".\n");
             }
             else {
                 break;
             }
         }
         return allLongWords.toString();
+    }
+
+    public String numberOfWordsInString(String value) {
+        String[] individualWords = cleanInputAndPutIntoArray(value);
+        TreeMap<String, Integer> numUniqueWords = new TreeMap<String, Integer>();
+        for(String word: individualWords) {
+            incrementOrPlaceValueInTreeMap(word, numUniqueWords);
+        }
+        return "The number of unique words in the string is: " + numUniqueWords.size() + ".\n";
+    }
+
+    private String[] cleanInputAndPutIntoArray(String value) {
+        //replace one or more characters that is not a-z with a space.
+        // (I don't check for A-Z because I change the string to lower case)
+        value = value.toLowerCase().replaceAll("[^a-z]+", " ");
+        return value.split(" ");
     }
 }
