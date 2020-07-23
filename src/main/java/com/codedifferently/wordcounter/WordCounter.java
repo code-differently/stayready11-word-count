@@ -18,10 +18,10 @@ public class WordCounter {
     public static void main(String[] args) {
         File file = new File("C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\stayready11-word-count\\TheModernPrometheus.txt");
         readFile(file);
-        printValuesInHashMap();
+        printOccurrencesOfWords();
         myLogger.info(getMostOrLeastUsedWords("most"));
         myLogger.info(getMostOrLeastUsedWords("least"));
-        myLogger.info(longestWords());
+        myLogger.info(returnLongestWords());
     }
 
     public static void readFile(File file) {
@@ -47,7 +47,7 @@ public class WordCounter {
         }
     }
 
-    private static void printValuesInHashMap() {
+    public static void printOccurrencesOfWords() {
         for(Map.Entry<String, Integer> word: trackUniqueWords.entrySet()) {
             myLogger.info(word.getKey() + " occurs " + word.getValue() + " times.");
         }
@@ -70,12 +70,29 @@ public class WordCounter {
         return mostOrLeast.equals("most") ? Collections.max(trackUniqueWords.values()) : Collections.min(trackUniqueWords.values());
     }
 
-    public static String longestWords() {
+    public static String returnLongestWords() {
         List<String> longestWords = trackUniqueWords.keySet()
                 .stream()
                 .sorted(Comparator.comparing(String::length))
                 .collect(Collectors.toList());
-        return longestWords.toString();
+        return convertLongestWordsToString(longestWords);
+    }
 
+    private static String convertLongestWordsToString(List<String> longestWords) {
+        StringBuilder allLongWords = new StringBuilder();
+        int lastIndex = longestWords.size() - 1;
+        String oneOfTheLongestWords = longestWords.get(lastIndex);
+        int lengthOfLongestWord = oneOfTheLongestWords.length();
+
+        for(int index = lastIndex; index >= 0; index--) {
+            String word = longestWords.get(index);
+            if(word.length() == lengthOfLongestWord) {
+                allLongWords.append("The word \"" + word + "\" is one of the words with the longest length of " + lengthOfLongestWord + "\n");
+            }
+            else {
+                break;
+            }
+        }
+        return allLongWords.toString();
     }
 }
