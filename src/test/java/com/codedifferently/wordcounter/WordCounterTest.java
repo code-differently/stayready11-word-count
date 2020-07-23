@@ -7,10 +7,12 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 public class WordCounterTest {
     private File file;
     private WordCounter wordCounter;
+    private final static Logger myLogger = Logger.getLogger("com.codedifferently.wordcounter");
 
     @Before
     public void setUp() {
@@ -20,9 +22,8 @@ public class WordCounterTest {
             wordCounter.readFile(file);
         }
         catch(FileNotFoundException fileNotFound) {
-            System.out.println();
+            myLogger.warning("Cannot find that file. Please try again.");
         }
-
     }
 
     @Test
