@@ -20,15 +20,65 @@ public class WordCounter {
     }
 
     public static void main(String[] args) {
-        File file = new File("C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\stayready11-word-count\\TheModernPrometheus.txt");
         WordCounter wordCounter = new WordCounter();
-        wordCounter.readFile(file);
 
-        myLogger.info(wordCounter.getOccurrencesOfWords());
-        myLogger.info(wordCounter.getNumberOfUniqueWords());
-        myLogger.info(wordCounter.getMostOrLeastUsedWords("most"));
-        myLogger.info(wordCounter.getMostOrLeastUsedWords("least"));
-        myLogger.info(wordCounter.getLongestWords());
+        wordCounter.keepAskingUserUntilTheyInputTheRightFile();
+
+        wordCounter.performOperationsOnFile();
+
+        wordCounter.askUserForStringToCountWords();
+    }
+
+    private void askUserForStringToCountWords() {
+        Scanner scanner = new Scanner(System.in);
+        myLogger.info("Do you want to find the number of unique alphabetical words in a string? You can enter 'quit' if you want to quit and 'yes' if you want to continue");
+        String answer = scanner.next().toLowerCase().trim();
+        while(!answer.equalsIgnoreCase("quit")) {
+            if(answer.equals("yes") || answer.equals("yea")) {
+                scanner.nextLine();
+                myLogger.info("What string do you want to input?");
+                answer = scanner.nextLine();
+                myLogger.info(this.numberOfWordsInString(answer));
+            }
+            myLogger.info("Do you want to find the number of unique alphabetical words in a string? You can enter 'quit' if you want to quit and 'yes' if you want to continue");
+            answer = scanner.next().toLowerCase().trim();
+        }
+    }
+
+    private void keepAskingUserUntilTheyInputTheRightFile() {
+        String path = "";
+        File file = null;
+        boolean fileNotValid = true;
+        while(fileNotValid) {
+            try {
+                path = this.askUserForFilePath();
+                path = path.replace("\\", "\\\\");
+                //for some reason it was inserting a newline so I had to take it out
+                path = path.replace("\n", "");
+                file = new File(path);
+                this.readFile(file);
+                fileNotValid = false;
+            }
+            catch(FileNotFoundException fileNotFoundException) {
+                myLogger.severe("File cannot be found. Try again please.");
+            }
+        }
+    }
+
+    private String askUserForFilePath() {
+        Scanner scanner = new Scanner(System.in);
+
+        myLogger.info("Enter a file path name.");
+
+        return scanner.next() + "\n";
+    }
+
+    private void performOperationsOnFile() {
+        myLogger.info(this.getOccurrencesOfWords());
+        myLogger.info(this.getNumberOfUniqueWords());
+        myLogger.info(this.getMostOrLeastUsedWords("most"));
+        myLogger.info(this.getMostOrLeastUsedWords("least"));
+        myLogger.info(this.getLongestWords());
     }
 
     public TreeMap<String, Integer> getTrackUniqueWords() {
@@ -37,7 +87,7 @@ public class WordCounter {
 
     //user shouldn't have to set the hashmap, only get it after operations
 
-    public void readFile(File file) {
+    public void readFile(File file) throws FileNotFoundException {
         try (Scanner in = new Scanner(new FileInputStream(file), "UTF-8")) {
             while(in.hasNext()) {
                 String individualWord = in.next().toLowerCase();
@@ -46,10 +96,6 @@ public class WordCounter {
                 individualWord = individualWord.replaceAll("[^a-z]", "");
                 incrementOrPlaceValueInTreeMap(individualWord, trackUniqueWords);
             }
-        }
-        catch(FileNotFoundException fileNotFoundException) {
-            myLogger.severe("File cannot be found. Try again another time.");
-            fileNotFoundException.printStackTrace();
         }
     }
 

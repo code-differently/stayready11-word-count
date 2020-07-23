@@ -5,17 +5,24 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.TreeMap;
 
 public class WordCounterTest {
-    File file;
-    WordCounter wordCounter;
+    private File file;
+    private WordCounter wordCounter;
 
     @Before
     public void setUp() {
         file = new File("C:\\Kaveesha\\Github\\devCodeDifferently\\stayReadyLabs\\stayready11-word-count\\SampleText.txt");
         wordCounter = new WordCounter();
-        wordCounter.readFile(file);
+        try {
+            wordCounter.readFile(file);
+        }
+        catch(FileNotFoundException fileNotFound) {
+            System.out.println();
+        }
+
     }
 
     @Test
