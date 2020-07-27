@@ -41,18 +41,25 @@ public class WordCounter
               }
            }
 
-           public void getWord(String input)
+           public String getWord(String input)
            {
-            for (int i = 0; i < wordCounter.size();i++)
-            {
-                if (wordCounter.containsKey(input))
+                if (wordCounter.size() == 0)
                 {
-                    System.out.println(input+" Appears "+wordCounter.get(input).intValue());
-                    break;
-                
+                    System.out.println("wordCounter is empty use count method first");
+                }
+                else
+                {
+                for (int i = 0; i < wordCounter.size();i++)
+                {
+                    if (wordCounter.containsKey(input))
+                    {
+                       return  input+" Appears "+wordCounter.get(input).intValue();
+
+                    }
                 }
             }
-           }
+            return input;
+        }
         
     }
 
