@@ -1,20 +1,19 @@
 package com.codedifferently.wordcounter;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.h2.store.fs.FileRec;
-
 public class WordCounter 
-{  
-    public static void main(String[] args)
+{
+    public static void main(String[] args) throws FileNotFoundException
      {
         HashMap<String, Integer> hash = new HashMap<String,Integer>();
 
-        String text = FileRec.reader();
+        String text = Filer.reader();
         String [] words = text.split(" ");
         for(String word : words)
         {
@@ -28,7 +27,7 @@ public class WordCounter
             }
         }
         sort(hash);
-    }
+      }
     
 
     public static String sort(Map <String, Integer> hash)
